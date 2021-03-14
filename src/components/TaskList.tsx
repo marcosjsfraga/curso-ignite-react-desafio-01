@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import '../styles/tasklist.scss'
 
@@ -15,24 +15,43 @@ export function TaskList() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function handleCreateNewTask() {
+    if (newTaskTitle === '') {
+      return
+    } 
+
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    let task: Task = {
+      id: Math.random(),
+      title: newTaskTitle,
+      isComplete: false
+    }
+
+    setTasks(old => [...old, task])
+    setNewTaskTitle('')
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const edtTasks = tasks.map(task => task.id === id ? {
+      ...task, 
+      isComplete: !task.isComplete
+    } : task)
+
+    setTasks(edtTasks)
   }
 
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    const fltTasks = tasks.filter(task => task.id !== id)
+    
+    setTasks(fltTasks)
   }
 
   return (
     <section className="task-list container">
       <header>
-        <h2>Minhas tasks</h2>
+        <h2>My tasks</h2>
 
         <div className="input-group">
-          <input 
+          <input autoFocus
             type="text" 
             placeholder="Adicionar novo todo" 
             onChange={(e) => setNewTaskTitle(e.target.value)}
